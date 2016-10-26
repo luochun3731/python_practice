@@ -11,6 +11,7 @@ f(3) = f(1) + f(2)
 f(n) = f(n-2) + f(n-1)
 '''
 
+
 def f(n):
     if 0 <= n <= 1:
         return n
