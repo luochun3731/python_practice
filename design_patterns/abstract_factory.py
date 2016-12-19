@@ -1,56 +1,105 @@
-class Operation:
-    def get_result(self):
-        pass
+'''
+Abstract Factory
+'''
 
 
-class Add(Operation):
-    def get_result(self):
-        return float(self.op1) + float(self.op2)
+class Frog:
+    def __init__(self, name):
+        self.name = name
+
+    def __str__(self):
+        return self.name
+
+    def interact_with(self, obstacle):
+        print('{} the Frog encounters {} and {}!'.format(self, obstacle, obstacle.action()))
 
 
-class Sub(Operation):
-    def get_result(self):
-        return float(self.op1) - float(self.op2)
+class Bug:
+    def __str__(self):
+        return 'a bug'
+
+    def action(self):
+        return 'eats it'
 
 
-class Mul(Operation):
-    def get_result(self):
-        return float(self.op1) * float(self.op2)
+class FrogWorld:
+    def __init__(self, name):
+        print(self)
+        self.player_name = name
+
+    def __str__(self):
+        return '\n\n\t########## Frog World ##########'
+
+    def make_character(self):
+        return Frog(self.player_name)
+
+    def make_obstacle(self):
+        return Bug()
 
 
-class Div(Operation):
-    def get_result(self):
-        try:
-            result = float(self.op1) / float(self.op2)
-            return result
-        except ZeroDivisionError:
-            print('ZeroDivisionError')
-            return 0
+class Wizard:
+    def __init__(self, name):
+        self.name = name
+
+    def __str__(self):
+        return self.name
+
+    def interact_with(self, obstacle):
+        print('{} the Wizard battles against {} and {}!'.format(self, obstacle, obstacle.action()))
 
 
-class Undef(Operation):
-    def get_result(self):
-        print('Undefined operation')
-        return 0
+class Ork:
+    def __str__(self):
+        return 'an evil ork'
+
+    def action(self):
+        return 'kills it'
 
 
-class OperationFactory:
-    operation = {'+': Add(), '-': Sub(), '*': Mul(), '/': Div()}
+class WizardWorld:
+    def __init__(self, name):
+        print(self)
+        self.player_name = name
 
-    def create_operation(self, ch):
-        if ch in self.operation:
-            op = self.operation[ch]
-        else:
-            op = Undef()
-        return op
+    def __str__(self):
+        return '\n\n\t########## Wizard World ##########'
+
+    def make_character(self):
+        return Wizard(self.player_name)
+
+    def make_obstacle(self):
+        return Ork()
+
+
+class GameEnvironment:
+    def __init__(self, factory):
+        self.hero = factory.make_character()
+        self.obstacle = factory.make_obstacle()
+
+    def play(self):
+        self.hero.interact_with(self.obstacle)
+
+
+def validate_age(name):
+    try:
+        age = input('Welcome {}. How old are you? '.format(name))
+        age = int(age)
+    except ValueError:
+        print('Age {} is invalid, please try again...'.format(age))
+        reduce(False, age)
+    return (True, age)
+
+
+def main():
+    name = input('Hello, what\'s your name? ')
+    valid_input = False
+    while not valid_input:
+        valid_input, age = validate_age(name)
+    game = FrogWorld if age < 18 else WizardWorld
+    print(game)
+    environment = GameEnvironment(game(name))
+    environment.play()
 
 
 if __name__ == '__main__':
-    op = input('operator: ')
-    op1 = input('op1: ')
-    op2 = input('op2: ')
-    factory = OperationFactory()
-    cal = factory.create_operation(op)
-    cal.op1 = op1
-    cal.op2 = op2
-    print(cal.get_result())
+    main()
